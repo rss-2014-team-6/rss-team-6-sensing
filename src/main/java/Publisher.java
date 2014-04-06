@@ -24,8 +24,7 @@ public class Publisher extends AbstractNodeMain {
 
 	Thread encoderThread;
 
-	Thread frontSonarThread;
-	Thread backSonarThread;
+	Thread sonarThread;
 
 	Object lock;
 
@@ -50,11 +49,8 @@ public class Publisher extends AbstractNodeMain {
 		EncoderPublisher encoderPub = new EncoderPublisher(node, orc, lock);
 		encoderThread = new Thread(encoderPub);
 
-		SonarPublisher frontPub = new SonarPublisher(node, orc, true, lock);
-		frontSonarThread = new Thread(frontPub);
-
-		SonarPublisher backPub = new SonarPublisher(node, orc, false, lock);
-		backSonarThread = new Thread(backPub);
+		SonarPublisher sonarPub = new SonarPublisher(node, orc, lock);
+		sonarThread = new Thread(sonarPub);
 
 		//constructors are not thread safe wrt to orc, must start all threads
 		// after all have been constructed
@@ -63,8 +59,7 @@ public class Publisher extends AbstractNodeMain {
 		bumpThread.start();
 		analogThread.start();
 		encoderThread.start();
-		frontSonarThread.start();
-		backSonarThread.start();
+		sonarThread.start();
 	}
 
 	@Override
@@ -75,8 +70,7 @@ public class Publisher extends AbstractNodeMain {
 		bumpThread.stop();
 		analogThread.stop();
 		encoderThread.stop();
-		frontSonarThread.stop();
-		backSonarThread.stop();
+		sonarThread.stop();
 	}
 
 	@Override
