@@ -23,7 +23,7 @@ public class EncoderPublisher implements Runnable {
 	this.lock = lock;
 	left = new QuadratureEncoder(orc, 0, false);
 	right = new QuadratureEncoder(orc, 1, true);
-	pub = node.newPublisher("rss/Encoder", "rss_msgs/EncoderMsg");
+	pub = node.newPublisher("/sense/Encoder", "rss_msgs/EncoderMsg");
     }
     
     @Override public void run() {

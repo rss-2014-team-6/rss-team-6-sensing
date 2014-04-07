@@ -10,7 +10,7 @@ import org.ros.node.topic.Publisher;
 public class BumperPublisher implements Runnable {
 
 	public static final String BUMP_MSG = "rss_msgs/BumpMsg";
-	public static final String BUMP_CHANNEL = "rss/BumpSensors";
+	public static final String BUMP_CHANNEL = "/sense/Bump";
 
 	private DigitalInput left;
 	private DigitalInput right;

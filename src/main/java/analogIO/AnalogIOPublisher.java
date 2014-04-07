@@ -23,7 +23,7 @@ public class AnalogIOPublisher implements Runnable {
 	for (int i = 0; i < 8; i++){
 	    inputs[i] = new AnalogInput(orc, i);
 	}
-	pub = node.newPublisher("rss/AnalogIO", "rss_msgs/AnalogStatusMsg");
+	pub = node.newPublisher("/sense/AnalogIO", "rss_msgs/AnalogStatusMsg");
     }
 	
     @Override public void run() {

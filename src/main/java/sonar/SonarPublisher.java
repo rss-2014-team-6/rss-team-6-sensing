@@ -36,7 +36,7 @@ public class SonarPublisher implements Runnable {
                 for (int i = 0; i < sonarAddrs.length; i++) {
                     sonars[i] = new SRF02(orc, sonarAddrs[i]);
                 }
-                pub = node.newPublisher("rss/Sonars", "rss_msgs/SonarMsg");
+                pub = node.newPublisher("/sense/Sonar", "rss_msgs/SonarMsg");
 	}
 
 	@Override public void run() {

@@ -21,7 +21,7 @@ public class BreakBeamPublisher implements Runnable {
 	this.orc = orc;
 	this.lock = lock;
 	input = new DigitalInput(orc, 7, false, false);
-	pub = node.newPublisher("rss/BreakBeam", "rss_msgs/BreakBeamMsg");
+	pub = node.newPublisher("/sense/BreakBeam", "rss_msgs/BreakBeamMsg");
     }
 
     @Override public void run() {

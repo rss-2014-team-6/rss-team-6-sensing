@@ -29,7 +29,7 @@ public class DigitalIOPublisher implements Runnable {
 		fastInputs[j] = new DigitalInput(orc, i, false, false);
 	    }
 	}
-	pub = node.newPublisher("rss/DigitalIO", "rss_msgs/DigitalStatusMsg");
+	pub = node.newPublisher("/sense/DigitalIO", "rss_msgs/DigitalStatusMsg");
     }
 
 
