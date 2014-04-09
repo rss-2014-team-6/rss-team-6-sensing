@@ -13,7 +13,8 @@ public class SonarPublisher implements Runnable {
 	SRF02[] sonars;
 	Publisher<SonarMsg> pub;
     // TODO: Fill in actual sonar addrs here
-    final int[] sonarAddrs = {0x70, 0x72};
+    final int[] sonarAddrs = {0x70, 0x72,
+                              0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70};
 	Object lock;
 
     /*
