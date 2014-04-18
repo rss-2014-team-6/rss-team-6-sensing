@@ -20,8 +20,8 @@ public class SonarPublisher implements Runnable {
 	//0xA0, 0xAA, 0xA5, then send the new desired id. (8 bit version)
 	//seems like you could use i2cTransaction in Orc (package orc) to send commands, 
 	//but honestly it's a little confusing to me. You might be better off downloading the nice software from the web.
-    final int[] sonarAddrs = {0x70, 0x72,
-                              0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70};
+    final int[] sonarAddrs = {0x70, 0x72}; // testing with two sonars for now since these are the addresses we have
+    //0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70};
 	Object lock;
 
     /*
