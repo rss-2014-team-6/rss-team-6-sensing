@@ -12,15 +12,16 @@ public class SonarPublisher implements Runnable {
 	Orc orc;
 	SRF02[] sonars;
 	Publisher<SonarMsg> pub;
-    // TODO: Fill in actual sonar addrs here
 	//addresses should be entered in clockwise order starting at pos x axis. 
 	//addresses are 7-bit (0x70 to 0x7F) which correspond to the 8-bit ids (0xE0 to 0xFE)
+        //(drop the last bit)
 	//to set an address:
 	//with only one sonar on I2C, send the following three commands (and no others) to the old device id:
 	//0xA0, 0xAA, 0xA5, then send the new desired id. (8 bit version)
 	//seems like you could use i2cTransaction in Orc (package orc) to send commands, 
 	//but honestly it's a little confusing to me. You might be better off downloading the nice software from the web.
-    final int[] sonarAddrs = {0x70, 0x72, 0x7C, 0x7A}; // testing with four sonars for now since these are the addresses we have
+    // {front, back, left, right}
+    final int[] sonarAddrs = {0x70, 0x72, 0x76, 0x71}; // testing with four sonars for now since these are the addresses we have
 	Object lock;
 
     /*
