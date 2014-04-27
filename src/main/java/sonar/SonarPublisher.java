@@ -22,7 +22,7 @@ public class SonarPublisher implements Runnable {
     //seems like you could use i2cTransaction in Orc (package orc) to send commands, 
     //but honestly it's a little confusing to me. You might be better off downloading the nice software from the web.
     // {front, back, left, right}
-    final int[] sonarAddrs = {0x70, 0x72, 0x76, 0x71}; // testing with four sonars for now since these are the addresses we have
+    final int[] sonarAddrs = {0x70, 0x72, 0x76, 0x74}; // testing with four sonars for now since these are the addresses we have
     Object lock;
 
     /*
