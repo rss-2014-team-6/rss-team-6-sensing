@@ -2,42 +2,32 @@ package digitalIO;
 
 import orc.DigitalInput;
 import orc.Orc;
+import orc.OrcStatus;
 
 import rss_msgs.BumpMsg;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 
-public class BumperPublisher implements Runnable {
+public class BumperPublisher {
 
-	public static final String BUMP_MSG = "rss_msgs/BumpMsg";
-	public static final String BUMP_CHANNEL = "/sense/Bump";
+    public static final String BUMP_MSG = "rss_msgs/BumpMsg";
+    public static final String BUMP_CHANNEL = "/sense/Bump";
 
-	private DigitalInput left;
-	private DigitalInput right;
-	private BumpMsg msg;
-	private Publisher<BumpMsg> pub;
-	private Object lock;
+    private DigitalInput left;
+    private DigitalInput right;
+    private BumpMsg msg;
+    private Publisher<BumpMsg> pub;
 
-	public BumperPublisher(ConnectedNode node, Orc orc, Object lock){
-		this.lock = lock;
-		left = new DigitalInput(orc, 0, true, true);
-		right = new DigitalInput(orc, 1, true, true);
-		pub = node.newPublisher(BUMP_CHANNEL, BUMP_MSG);
-	}
+    public BumperPublisher(ConnectedNode node, Orc orc){
+        left = new DigitalInput(orc, 0, true, true);
+        right = new DigitalInput(orc, 1, true, true);
+        pub = node.newPublisher(BUMP_CHANNEL, BUMP_MSG);
+    }
 
-	@Override public void run() {
-		msg = pub.newMessage();
-		while(true){
-			synchronized(lock) {
-				msg.setLeft(left.getValue());
-				msg.setRight(right.getValue());
-			}
-			pub.publish(msg);
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    public void publish(final OrcStatus status){
+        msg = pub.newMessage();
+        msg.setLeft(left.getValue(status));
+        msg.setRight(right.getValue(status));
+        pub.publish(msg);
+    }
 }

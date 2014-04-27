@@ -1,5 +1,6 @@
 import motion.EncoderPublisher;
 import orc.Orc;
+import orc.OrcStatus;
 
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
@@ -12,74 +13,69 @@ import digitalIO.BreakBeamPublisher;
 import digitalIO.BumperPublisher;
 import digitalIO.DigitalIOPublisher;
 
-public class Publisher extends AbstractNodeMain {
-	Orc orc;
+public class Publisher extends AbstractNodeMain implements Runnable {
+    Orc orc;
+    Object lock = new Object();
 
-	Thread digitalThread;
+    DigitalIOPublisher digitalPub;
+    BreakBeamPublisher breakBeamPub;
+    BumperPublisher bumpPub;
+    AnalogIOPublisher analogPub;
+    EncoderPublisher encoderPub;
+    SonarPublisher sonarPub;
 
-	Thread breakBeamThread;
-	Thread bumpThread;
+    Thread publisherThread;
+    Thread sonarThread;
 
-	Thread analogThread;
+    @Override
+    public void run() {
+        while (true) {
+            final OrcStatus status;
+            synchronized(lock) {
+                status = orc.getStatus();
+            }
+            digitalPub.publish(status);
+            breakBeamPub.publish(status);
+            bumpPub.publish(status);
+            analogPub.publish(status);
+            encoderPub.publish(status);
 
-	Thread encoderThread;
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {}
+        }
+    }
 
-	Thread sonarThread;
+    @Override
+    public void onStart(ConnectedNode node) {
 
-	Object lock;
+        orc = Orc.makeOrc();
 
-	@Override
-	public void onStart(ConnectedNode node) {
-		lock = new Object();
+        digitalPub = new DigitalIOPublisher(node, orc);
+        breakBeamPub = new BreakBeamPublisher(node, orc);
+        bumpPub = new BumperPublisher(node, orc);
+        analogPub = new AnalogIOPublisher(node, orc);
+        encoderPub = new EncoderPublisher(node, orc);
+        sonarPub = new SonarPublisher(node, orc, lock);
+        sonarThread = new Thread(sonarPub);
 
-		orc = Orc.makeOrc();
+        //spawn a thread to publish every 50ms or so
+        publisherThread = new Thread(this);
+        publisherThread.start();
+        //sonars go on their own thread, since they have to ping
+        //separately
+        sonarThread.start();
+    }
 
-		DigitalIOPublisher digitalPub = new DigitalIOPublisher(node, orc, lock);
-		digitalThread = new Thread(digitalPub);
+    @Override
+    public void onShutdown(Node node) {
+        node.shutdown();
+        publisherThread.stop();
+        sonarThread.stop();
+    }
 
-		BreakBeamPublisher breakBeamPub = new BreakBeamPublisher(node, orc, lock);
-		breakBeamThread = new Thread(breakBeamPub);
-
-		BumperPublisher bumpPub = new BumperPublisher(node, orc, lock);
-		bumpThread = new Thread(bumpPub);
-
-		AnalogIOPublisher analogPub = new AnalogIOPublisher(node, orc, lock);
-		analogThread = new Thread(analogPub);
-
-		EncoderPublisher encoderPub = new EncoderPublisher(node, orc, lock);
-		encoderThread = new Thread(encoderPub);
-
-		SonarPublisher sonarPub = new SonarPublisher(node, orc, lock);
-		sonarThread = new Thread(sonarPub);
-
-		//constructors are not thread safe wrt to orc, must start all threads
-		// after all have been constructed
-		digitalThread.start();
-		breakBeamThread.start();
-		bumpThread.start();
-		analogThread.start();
-		encoderThread.start();
-		sonarThread.start();
-	}
-
-	@Override
-	public void onShutdown(Node node) {
-		node.shutdown();
-		digitalThread.stop();
-		breakBeamThread.stop();
-		bumpThread.stop();
-		analogThread.stop();
-		encoderThread.stop();
-		sonarThread.stop();
-	}
-
-	@Override
-	public void onShutdownComplete(Node node) {
-	}
-
-	@Override
-	public GraphName getDefaultNodeName() {
-		return GraphName.of("rss/uorc_publisher");
-	}
-
+    @Override
+    public GraphName getDefaultNodeName() {
+        return GraphName.of("rss/uorc_publisher");
+    }
 }

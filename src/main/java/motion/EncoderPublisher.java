@@ -1,13 +1,14 @@
 package motion;
 
 import orc.Orc;
+import orc.OrcStatus;
 import orc.QuadratureEncoder;
 
 import rss_msgs.EncoderMsg;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 
-public class EncoderPublisher implements Runnable {
+public class EncoderPublisher {
 
     ConnectedNode node;
     Orc orc;
@@ -17,29 +18,18 @@ public class EncoderPublisher implements Runnable {
     Publisher<EncoderMsg> pub;
     Object lock;
 	
-    public EncoderPublisher(ConnectedNode node, Orc orc, Object lock) {
+    public EncoderPublisher(ConnectedNode node, Orc orc) {
 	this.node = node;
-	this.orc = orc;
-	this.lock = lock;
 	left = new QuadratureEncoder(orc, 0, false);
 	right = new QuadratureEncoder(orc, 1, true);
 	pub = node.newPublisher("/sense/Encoder", "rss_msgs/EncoderMsg");
     }
     
-    @Override public void run() {
+    public void publish(final OrcStatus status) {
 	msg = pub.newMessage();
-	while(true){
-	    synchronized(lock) {
-		msg.setLeft(left.getPosition());
-		msg.setRight(right.getPosition());
-	    }
-	    pub.publish(msg);
-	    try {
-		Thread.sleep(50);
-	    } catch (InterruptedException e) {
-		e.printStackTrace();
-	    }
-	}
+        msg.setLeft(left.getPosition(status));
+        msg.setRight(right.getPosition(status));
+        pub.publish(msg);
     }
 
 }

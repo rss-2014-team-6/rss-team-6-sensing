@@ -2,43 +2,31 @@ package digitalIO;
 
 import orc.DigitalInput;
 import orc.Orc;
+import orc.OrcStatus;
 
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import rss_msgs.*;
 
-public class BreakBeamPublisher implements Runnable {
+public class BreakBeamPublisher {
 	
     ConnectedNode node;
     Orc orc;
     DigitalInput input;
     BreakBeamMsg msg;
     Publisher<BreakBeamMsg> pub;
-    Object lock;
 
-    public BreakBeamPublisher(ConnectedNode node, Orc orc, Object lock) {
+    public BreakBeamPublisher(ConnectedNode node, Orc orc) {
 	this.node = node;
 	this.orc = orc;
-	this.lock = lock;
 	input = new DigitalInput(orc, 7, false, false);
 	pub = node.newPublisher("/sense/BreakBeam", "rss_msgs/BreakBeamMsg");
     }
 
-    @Override public void run() {
-	// TODO Auto-generated method stub
+    public void publish(final OrcStatus status) {
 	msg = pub.newMessage();
-	while (true){
-	    synchronized(lock) {
-		msg.setBeamBroken(input.getValue());
-	    }
-	    pub.publish(msg);
-	    try {
-		Thread.sleep(50);
-	    } catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
-	}
+        msg.setBeamBroken(input.getValue(status));
+        pub.publish(msg);
     }
     
 }
