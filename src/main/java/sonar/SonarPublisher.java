@@ -68,7 +68,8 @@ public class SonarPublisher implements Runnable {
             }
 
             msg.setSonarValues(measurements);
-            pub.publish(msg);
+	    msg.setTime(System.currentTimeMillis());
+	    pub.publish(msg);
             try {
                 Thread.sleep(50);
             }
