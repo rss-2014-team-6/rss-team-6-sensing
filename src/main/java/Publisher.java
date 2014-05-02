@@ -50,6 +50,9 @@ public class Publisher extends AbstractNodeMain implements Runnable {
     public void onStart(ConnectedNode node) {
 
         orc = Orc.makeOrc();
+        if (orc.isSim()) {
+            orc.setNode(node);
+        }
 
         digitalPub = new DigitalIOPublisher(node, orc);
         breakBeamPub = new BreakBeamPublisher(node, orc);
